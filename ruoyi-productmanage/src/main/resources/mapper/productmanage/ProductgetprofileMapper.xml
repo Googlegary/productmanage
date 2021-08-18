@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.productmanage.mapper.ProductgetprofileMapper">
+    
+    <resultMap type="Productgetprofile" id="ProductgetprofileResult">
+        <result property="pGetId"    column="P_get_id"    />
+        <result property="pId"    column="P_id"    />
+        <result property="pOwnerId"    column="P_owner_id"    />
+        <result property="pGetName"    column="P_get_name"    />
+        <result property="pGetMobile"    column="P_get_mobile"    />
+        <result property="pGetGender"    column="P_get_gender"    />
+    </resultMap>
+
+    <sql id="selectProductgetprofileVo">
+        select P_get_id, P_id, P_owner_id, P_get_name, P_get_mobile, P_get_gender from productgetprofile
+    </sql>
+
+    <select id="selectProductgetprofileList" parameterType="Productgetprofile" resultMap="ProductgetprofileResult">
+        <include refid="selectProductgetprofileVo"/>
+        <where>  
+            <if test="pId != null "> and P_id = #{pId}</if>
+            <if test="pOwnerId != null "> and P_owner_id = #{pOwnerId}</if>
+            <if test="pGetName != null  and pGetName != ''"> and P_get_name like concat('%', #{pGetName}, '%')</if>
+            <if test="pGetMobile != null  and pGetMobile != ''"> and P_get_mobile = #{pGetMobile}</if>
+            <if test="pGetGender != null  and pGetGender != ''"> and P_get_gender = #{pGetGender}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductgetprofileByPGetId" parameterType="Long" resultMap="ProductgetprofileResult">
+        <include refid="selectProductgetprofileVo"/>
+        where P_get_id = #{pGetId}
+    </select>
+        
+    <insert id="insertProductgetprofile" parameterType="Productgetprofile">
+        insert into productgetprofile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pGetId != null">P_get_id,</if>
+            <if test="pId != null">P_id,</if>
+            <if test="pOwnerId != null">P_owner_id,</if>
+            <if test="pGetName != null">P_get_name,</if>
+            <if test="pGetMobile != null">P_get_mobile,</if>
+            <if test="pGetGender != null">P_get_gender,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pGetId != null">#{pGetId},</if>
+            <if test="pId != null">#{pId},</if>
+            <if test="pOwnerId != null">#{pOwnerId},</if>
+            <if test="pGetName != null">#{pGetName},</if>
+            <if test="pGetMobile != null">#{pGetMobile},</if>
+            <if test="pGetGender != null">#{pGetGender},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductgetprofile" parameterType="Productgetprofile">
+        update productgetprofile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pId != null">P_id = #{pId},</if>
+            <if test="pOwnerId != null">P_owner_id = #{pOwnerId},</if>
+            <if test="pGetName != null">P_get_name = #{pGetName},</if>
+            <if test="pGetMobile != null">P_get_mobile = #{pGetMobile},</if>
+            <if test="pGetGender != null">P_get_gender = #{pGetGender},</if>
+        </trim>
+        where P_get_id = #{pGetId}
+    </update>
+
+    <delete id="deleteProductgetprofileByPGetId" parameterType="Long">
+        delete from productgetprofile where P_get_id = #{pGetId}
+    </delete>
+
+    <delete id="deleteProductgetprofileByPGetIds" parameterType="String">
+        delete from productgetprofile where P_get_id in 
+        <foreach item="pGetId" collection="array" open="(" separator="," close=")">
+            #{pGetId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.productmanage.mapper.OwnerprofileMapper">
+    
+    <resultMap type="Ownerprofile" id="OwnerprofileResult">
+        <result property="pOwnerId"    column="P_owner_id"    />
+        <result property="pOwnerName"    column="P_owner_name"    />
+        <result property="pOwnerGender"    column="P_owner_gender"    />
+        <result property="pOwnerPhone"    column="P_owner_phone"    />
+        <result property="pOwnerEmail"    column="P_owner_email"    />
+        <result property="pId"    column="P_id"    />
+        <result property="pGetId"    column="P_get_id"    />
+    </resultMap>
+
+    <sql id="selectOwnerprofileVo">
+        select P_owner_id, P_owner_name, P_owner_gender, P_owner_phone, P_owner_email, P_id, P_get_id from ownerprofile
+    </sql>
+
+    <select id="selectOwnerprofileList" parameterType="Ownerprofile" resultMap="OwnerprofileResult">
+        <include refid="selectOwnerprofileVo"/>
+        <where>  
+            <if test="pOwnerName != null  and pOwnerName != ''"> and P_owner_name like concat('%', #{pOwnerName}, '%')</if>
+            <if test="pOwnerGender != null  and pOwnerGender != ''"> and P_owner_gender = #{pOwnerGender}</if>
+            <if test="pOwnerPhone != null  and pOwnerPhone != ''"> and P_owner_phone = #{pOwnerPhone}</if>
+            <if test="pOwnerEmail != null  and pOwnerEmail != ''"> and P_owner_email = #{pOwnerEmail}</if>
+            <if test="pId != null "> and P_id = #{pId}</if>
+            <if test="pGetId != null "> and P_get_id = #{pGetId}</if>
+        </where>
+    </select>
+    
+    <select id="selectOwnerprofileByPOwnerId" parameterType="Long" resultMap="OwnerprofileResult">
+        <include refid="selectOwnerprofileVo"/>
+        where P_owner_id = #{pOwnerId}
+    </select>
+        
+    <insert id="insertOwnerprofile" parameterType="Ownerprofile">
+        insert into ownerprofile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pOwnerId != null">P_owner_id,</if>
+            <if test="pOwnerName != null">P_owner_name,</if>
+            <if test="pOwnerGender != null">P_owner_gender,</if>
+            <if test="pOwnerPhone != null">P_owner_phone,</if>
+            <if test="pOwnerEmail != null">P_owner_email,</if>
+            <if test="pId != null">P_id,</if>
+            <if test="pGetId != null">P_get_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pOwnerId != null">#{pOwnerId},</if>
+            <if test="pOwnerName != null">#{pOwnerName},</if>
+            <if test="pOwnerGender != null">#{pOwnerGender},</if>
+            <if test="pOwnerPhone != null">#{pOwnerPhone},</if>
+            <if test="pOwnerEmail != null">#{pOwnerEmail},</if>
+            <if test="pId != null">#{pId},</if>
+            <if test="pGetId != null">#{pGetId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOwnerprofile" parameterType="Ownerprofile">
+        update ownerprofile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pOwnerName != null">P_owner_name = #{pOwnerName},</if>
+            <if test="pOwnerGender != null">P_owner_gender = #{pOwnerGender},</if>
+            <if test="pOwnerPhone != null">P_owner_phone = #{pOwnerPhone},</if>
+            <if test="pOwnerEmail != null">P_owner_email = #{pOwnerEmail},</if>
+            <if test="pId != null">P_id = #{pId},</if>
+            <if test="pGetId != null">P_get_id = #{pGetId},</if>
+        </trim>
+        where P_owner_id = #{pOwnerId}
+    </update>
+
+    <delete id="deleteOwnerprofileByPOwnerId" parameterType="Long">
+        delete from ownerprofile where P_owner_id = #{pOwnerId}
+    </delete>
+
+    <delete id="deleteOwnerprofileByPOwnerIds" parameterType="String">
+        delete from ownerprofile where P_owner_id in 
+        <foreach item="pOwnerId" collection="array" open="(" separator="," close=")">
+            #{pOwnerId}
+        </foreach>
+    </delete>
+
+</mapper>

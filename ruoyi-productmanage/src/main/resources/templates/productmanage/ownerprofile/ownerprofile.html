@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('捐赠人资料列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>物资所属人姓名：</label>
+                                <input type="text" name="pOwnerName"/>
+                            </li>
+                            <li>
+                                <label>物资所属人性别：</label>
+                                <select name="pOwnerGender" th:with="type=${@dict.getType('P_owner_gender')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>物资所属人电话：</label>
+                                <input type="text" name="pOwnerPhone"/>
+                            </li>
+                            <li>
+                                <label>物资所属人邮箱：</label>
+                                <input type="text" name="pOwnerEmail"/>
+                            </li>
+                            <li>
+                                <label>物品编号：</label>
+                                <input type="text" name="pId"/>
+                            </li>
+                            <li>
+                                <label>物品接收人编号：</label>
+                                <input type="text" name="pGetId"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="productmanage:ownerprofile:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="productmanage:ownerprofile:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="productmanage:ownerprofile:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="productmanage:ownerprofile:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('productmanage:ownerprofile:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('productmanage:ownerprofile:remove')}]];
+        var pOwnerGenderDatas = [[${@dict.getType('P_owner_gender')}]];
+        var prefix = ctx + "productmanage/ownerprofile";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "捐赠人资料",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'pOwnerId',
+                    title: '物资所属人编号',
+                    visible: false
+                },
+                {
+                    field: 'pOwnerName',
+                    title: '物资所属人姓名'
+                },
+                {
+                    field: 'pOwnerGender',
+                    title: '物资所属人性别',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(pOwnerGenderDatas, value);
+                    }
+                },
+                {
+                    field: 'pOwnerPhone',
+                    title: '物资所属人电话'
+                },
+                {
+                    field: 'pOwnerEmail',
+                    title: '物资所属人邮箱'
+                },
+                {
+                    field: 'pId',
+                    title: '物品编号'
+                },
+                {
+                    field: 'pGetId',
+                    title: '物品接收人编号'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.pOwnerId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.pOwnerId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

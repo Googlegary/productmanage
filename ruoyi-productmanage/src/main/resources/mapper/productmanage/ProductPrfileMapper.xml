@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.productmanage.mapper.ProductPrfileMapper">
+    
+    <resultMap type="ProductPrfile" id="ProductPrfileResult">
+        <result property="pId"    column="P_id"    />
+        <result property="pOwnerId"    column="P_owner_id"    />
+        <result property="pGetId"    column="P_get_id"    />
+        <result property="pName"    column="P_Name"    />
+        <result property="pType"    column="P_type"    />
+        <result property="pStatus"    column="P_status"    />
+        <result property="pPrice"    column="P_price"    />
+        <result property="pTime"    column="P_time"    />
+    </resultMap>
+
+    <resultMap id="ProductPrfileOwnerprofileResult" type="ProductPrfile" extends="ProductPrfileResult">
+        <collection property="ownerprofileList" notNullColumn="sub_P_owner_id" javaType="java.util.List" resultMap="OwnerprofileResult" />
+    </resultMap>
+
+    <resultMap type="Ownerprofile" id="OwnerprofileResult">
+        <result property="pOwnerId"    column="sub_P_owner_id"    />
+        <result property="pOwnerName"    column="sub_P_owner_name"    />
+        <result property="pOwnerGender"    column="sub_P_owner_gender"    />
+        <result property="pOwnerPhone"    column="sub_P_owner_phone"    />
+        <result property="pOwnerEmail"    column="sub_P_owner_email"    />
+        <result property="pId"    column="sub_P_id"    />
+        <result property="pGetId"    column="sub_P_get_id"    />
+    </resultMap>
+
+    <sql id="selectProductPrfileVo">
+        select P_id, P_owner_id, P_get_id, P_Name, P_type, P_status, P_price, P_time from product_prfile
+    </sql>
+
+    <select id="selectProductPrfileList" parameterType="ProductPrfile" resultMap="ProductPrfileResult">
+        <include refid="selectProductPrfileVo"/>
+        <where>  
+            <if test="pOwnerId != null "> and P_owner_id = #{pOwnerId}</if>
+            <if test="pGetId != null "> and P_get_id = #{pGetId}</if>
+            <if test="pName != null  and pName != ''"> and P_Name like concat('%', #{pName}, '%')</if>
+            <if test="pType != null  and pType != ''"> and P_type = #{pType}</if>
+            <if test="pStatus != null  and pStatus != ''"> and P_status = #{pStatus}</if>
+            <if test="pPrice != null "> and P_price = #{pPrice}</if>
+            <if test="pTime != null "> and P_time = #{pTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductPrfileByPId" parameterType="Long" resultMap="ProductPrfileOwnerprofileResult">
+        select a.P_id, a.P_owner_id, a.P_get_id, a.P_Name, a.P_type, a.P_status, a.P_price, a.P_time,
+            b.P_owner_id as sub_P_owner_id, b.P_owner_name as sub_P_owner_name, b.P_owner_gender as sub_P_owner_gender, b.P_owner_phone as sub_P_owner_phone, b.P_owner_email as sub_P_owner_email, b.P_id as sub_P_id, b.P_get_id as sub_P_get_id
+        from product_prfile a
+        left join ownerprofile b on b.P_owner_id = a.P_id
+        where a.P_id = #{pId}
+    </select>
+        
+    <insert id="insertProductPrfile" parameterType="ProductPrfile">
+        insert into product_prfile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pId != null">P_id,</if>
+            <if test="pOwnerId != null">P_owner_id,</if>
+            <if test="pGetId != null">P_get_id,</if>
+            <if test="pName != null">P_Name,</if>
+            <if test="pType != null">P_type,</if>
+            <if test="pStatus != null">P_status,</if>
+            <if test="pPrice != null">P_price,</if>
+            <if test="pTime != null">P_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pId != null">#{pId},</if>
+            <if test="pOwnerId != null">#{pOwnerId},</if>
+            <if test="pGetId != null">#{pGetId},</if>
+            <if test="pName != null">#{pName},</if>
+            <if test="pType != null">#{pType},</if>
+            <if test="pStatus != null">#{pStatus},</if>
+            <if test="pPrice != null">#{pPrice},</if>
+            <if test="pTime != null">#{pTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductPrfile" parameterType="ProductPrfile">
+        update product_prfile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pOwnerId != null">P_owner_id = #{pOwnerId},</if>
+            <if test="pGetId != null">P_get_id = #{pGetId},</if>
+            <if test="pName != null">P_Name = #{pName},</if>
+            <if test="pType != null">P_type = #{pType},</if>
+            <if test="pStatus != null">P_status = #{pStatus},</if>
+            <if test="pPrice != null">P_price = #{pPrice},</if>
+            <if test="pTime != null">P_time = #{pTime},</if>
+        </trim>
+        where P_id = #{pId}
+    </update>
+
+    <delete id="deleteProductPrfileByPId" parameterType="Long">
+        delete from product_prfile where P_id = #{pId}
+    </delete>
+
+    <delete id="deleteProductPrfileByPIds" parameterType="String">
+        delete from product_prfile where P_id in 
+        <foreach item="pId" collection="array" open="(" separator="," close=")">
+            #{pId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteOwnerprofileByPOwnerIds" parameterType="String">
+        delete from ownerprofile where P_owner_id in 
+        <foreach item="pOwnerId" collection="array" open="(" separator="," close=")">
+            #{pOwnerId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOwnerprofileByPOwnerId" parameterType="Long">
+        delete from ownerprofile where P_owner_id = #{pOwnerId}
+    </delete>
+
+    <insert id="batchOwnerprofile">
+        insert into ownerprofile( P_owner_id, P_owner_name, P_owner_gender, P_owner_phone, P_owner_email, P_id, P_get_id) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.pOwnerId}, #{item.pOwnerName}, #{item.pOwnerGender}, #{item.pOwnerPhone}, #{item.pOwnerEmail}, #{item.pId}, #{item.pGetId})
+        </foreach>
+    </insert>
+
+</mapper>
